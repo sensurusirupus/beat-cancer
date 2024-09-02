@@ -1,4 +1,4 @@
-import { records, screening, user, apps } from "../assets";
+import { records, screening, user, apps, sethoscope,card } from "../assets";
 
 export const navlinks = [
   {
@@ -15,6 +15,16 @@ export const navlinks = [
     name: "screening",
     imgUrl: screening,
     link: "/screening-schedules",
+  },
+  {
+    name: 'professionals',
+    imgUrl: sethoscope,
+    link: '/professionals',
+  },
+  {
+    name: 'subscriptions',
+    imgUrl: card,
+    link: '/subscriptions',
   },
 
   {

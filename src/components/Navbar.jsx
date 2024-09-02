@@ -1,53 +1,94 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { usePrivy } from "@privy-io/react-auth";
-import { useStateContext } from "../context"; // Adjust the import path
-
+import { useStateContext } from "../context";
 import { CustomButton } from ".";
 import { menu, search } from "../assets";
 import { navlinks } from "../constants";
 import { IconHeartHandshake } from "@tabler/icons-react";
+import { Web3Auth } from "@web3auth/modal";
+import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
+
+const clientId = "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ";
+
+const chainConfig = {
+  chainNamespace: CHAIN_NAMESPACES.EIP155,
+  chainId: "0xaa36a7",
+  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  displayName: "Ethereum Sepolia Testnet",
+  blockExplorerUrl: "https://sepolia.etherscan.io",
+  ticker: "ETH",
+  tickerName: "Ethereum",
+  logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
+};
+
+const privateKeyProvider = new EthereumPrivateKeyProvider({
+  config: { chainConfig },
+});
+
+const web3auth = new Web3Auth({
+  clientId,
+  chainConfig,
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
+  privateKeyProvider
+});
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState("dashboard");
   const [toggleDrawer, setToggleDrawer] = useState(false);
-  const { ready, authenticated, login, user, logout } = usePrivy();
-  const { fetchUsers, users, fetchUserRecords } = useStateContext();
-
-  const fetchUserInfo = useCallback(async () => {
-    if (!user) return;
-
-    try {
-      await fetchUsers();
-      const existingUser = users.find(
-        (u) => u.createdBy === user.email.address,
-      );
-      if (existingUser) {
-        await fetchUserRecords(user.email.address);
-      }
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-    }
-  }, [user, fetchUsers, users, fetchUserRecords]);
+  const { fetchUserByEmail, createUser, currentUser } = useStateContext();
+  const [provider, setProvider] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    if (authenticated && user) {
-      fetchUserInfo();
-    }
-  }, [authenticated, user, fetchUserInfo]);
+    const init = async () => {
+      try {
+        await web3auth.initModal();
+        setProvider(web3auth.provider);
 
-  const handleLoginLogout = useCallback(() => {
-    if (authenticated) {
-      logout();
-    } else {
-      login().then(() => {
-        if (user) {
-          fetchUserInfo();
+        if (web3auth.connected) {
+          setLoggedIn(true);
+          const user = await web3auth.getUserInfo();
+          setUserInfo(user);
+          if (user.email) {
+            localStorage.setItem('userEmail', user.email);
+            await fetchUserByEmail(user.email);
+          }
         }
-      });
+      } catch (error) {
+        console.error("Error initializing Web3Auth:", error);
+      }
+    };
+
+    init();
+  }, [fetchUserByEmail]);
+
+  const handleLoginLogout = useCallback(async () => {
+    if (loggedIn) {
+      await web3auth.logout();
+      setProvider(null);
+      setLoggedIn(false);
+      setUserInfo(null);
+      localStorage.removeItem('userEmail');
+    } else {
+      try {
+        const web3authProvider = await web3auth.connect();
+        setProvider(web3authProvider);
+        setLoggedIn(true);
+        const user = await web3auth.getUserInfo();
+        setUserInfo(user);
+        if (user.email) {
+          localStorage.setItem('userEmail', user.email);
+          await createUser({ createdBy: user.email, name: user.name || 'Anonymous User' });
+          await fetchUserByEmail(user.email);
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+      }
     }
-  }, [authenticated, login, logout, user, fetchUserInfo]);
+  }, [loggedIn, createUser, fetchUserByEmail]);
 
   return (
     <div className="mb-[35px] flex flex-col-reverse justify-between gap-6 md:flex-row">
@@ -69,8 +110,8 @@ const Navbar = () => {
       <div className="hidden flex-row justify-end gap-2 sm:flex">
         <CustomButton
           btnType="button"
-          title={authenticated ? "Log Out" : "Log In"}
-          styles={authenticated ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
+          title={loggedIn ? "Log Out" : "Log In"}
+          styles={loggedIn ? "bg-[#1dc071]" : "bg-[#8c6dfd]"}
           handleClick={handleLoginLogout}
         />
       </div>

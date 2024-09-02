@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../context";
-import { usePrivy } from "@privy-io/react-auth";
+// import { usePrivy } from "@privy-io/react-auth";
 
 const Onboarding = () => {
   const { createUser } = useStateContext();
@@ -9,8 +9,8 @@ const Onboarding = () => {
   const [age, setAge] = useState("");
   const [location, setLocation] = useState("");
   const navigate = useNavigate();
-  const { user } = usePrivy();
-
+  // const { user } = usePrivy();
+const user = {}
   console.log(user);
   const handleOnboarding = async (e) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ const Onboarding = () => {
       folders: [],
       treatmentCounts: 0,
       folder: [],
-      createdBy: user.email.address,
+      createdBy: localStorage.getItem('userEmail'),
     };
 
     console.log(userData);

@@ -1,24 +1,24 @@
 import React, { useEffect } from "react";
 import { useStateContext } from "../context";
-import { usePrivy } from "@privy-io/react-auth";
+// import { usePrivy } from "@privy-io/react-auth";
 
 const Profile = () => {
   const { currentUser, fetchUserByEmail } = useStateContext();
-  const { user } = usePrivy();
+  // const { user } = usePrivy();
 
-  useEffect(() => {
-    if (!currentUser) {
-      fetchUserByEmail(user?.email?.address);
-    }
-  }, [currentUser, fetchUserByEmail]);
+  // useEffect(() => {
+  //   if (!currentUser) {
+  //     fetchUserByEmail(user?.email?.address);
+  //   }
+  // }, [currentUser, fetchUserByEmail]);
 
-  if (!currentUser) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-lg text-gray-500">Loading...</div>
-      </div>
-    );
-  }
+  // if (!currentUser) {
+  //   return (
+  //     <div className="flex h-screen items-center justify-center">
+  //       <div className="text-lg text-gray-500">Loading...</div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="mx-auto mt-16 max-w-lg rounded-lg bg-[#1c1c24] p-6 shadow-lg">
@@ -27,7 +27,7 @@ const Profile = () => {
           <span className="text-6xl">😊</span>
         </p>
         <h1 className="mb-2 text-3xl font-semibold text-white">User Profile</h1>
-        <div className="mt-4 w-full">
+        {/* <div className="mt-4 w-full">
           <p className="mb-1 text-sm text-gray-400">Email:</p>
           <p className="mb-4 text-lg font-semibold text-white">
             {currentUser.createdBy}
@@ -47,7 +47,7 @@ const Profile = () => {
           <p className="text-lg font-semibold text-white">
             {currentUser.location}
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

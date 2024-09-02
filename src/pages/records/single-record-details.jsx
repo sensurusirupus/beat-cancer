@@ -11,7 +11,7 @@ import FileUploadModal from "./components/file-upload-modal";
 import RecordDetailsHeader from "./components/record-details-header";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+const geminiApiKey = process.env.GEMINI_API_KEY;
 
 function SingleRecordDetails() {
   const { state } = useLocation();

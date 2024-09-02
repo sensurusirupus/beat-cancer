@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { IconCirclePlus } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
-import { usePrivy } from "@privy-io/react-auth";
+// import { usePrivy } from "@privy-io/react-auth";
 import { useStateContext } from "../../context/index";
 import CreateRecordModal from "./components/create-record-modal"; // Adjust the import path
 import RecordCard from "./components/record-card"; // Adjust the import path
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = usePrivy();
+  // const { user } = usePrivy();
+  const userEmail = localStorage.getItem('userEmail');
   const {
     records,
     fetchUserRecords,
@@ -20,11 +21,11 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      fetchUserByEmail(user.email.address);
-      fetchUserRecords(user.email.address);
+    if (userEmail) {
+      fetchUserByEmail(userEmail);
+      fetchUserRecords(userEmail);
     }
-  }, [user, fetchUserByEmail, fetchUserRecords]);
+  }, [userEmail, fetchUserByEmail, fetchUserRecords]);
 
   useEffect(() => {
     setUserRecords(records);
@@ -47,11 +48,11 @@ const Index = () => {
           recordName: foldername,
           analysisResult: "",
           kanbanRecords: "",
-          createdBy: user.email.address,
+          createdBy: userEmail,
         });
 
         if (newRecord) {
-          fetchUserRecords(user.email.address);
+          fetchUserRecords(userEmail);
           handleCloseModal();
         }
       }

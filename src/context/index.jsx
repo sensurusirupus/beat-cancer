@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { db } from "../utils/dbConfig"; // Adjust the path to your dbConfig
-import { Users, Records } from "../utils/schema"; // Adjust the path to your schema definitions
+import { Users, Records, HealthProfessionals, Subscriptions, SubscriptionTransactions } from "../utils/schema"; // Adjust the path to your schema definitions
 import { eq } from "drizzle-orm";
 
-// Create a context
+// Create a context 
 const StateContext = createContext();
 
 // Provider component
@@ -11,6 +11,8 @@ export const StateContextProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [records, setRecords] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [healthProfessionals, setHealthProfessionals] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
 
   // Function to fetch all users
   const fetchUsers = useCallback(async () => {
@@ -99,6 +101,115 @@ export const StateContextProvider = ({ children }) => {
     }
   }, []);
 
+  // Health Professionals functions
+  const fetchHealthProfessionals = useCallback(async () => {
+    try {
+      const result = await db.select().from(HealthProfessionals).execute();
+      setHealthProfessionals(result);
+    } catch (error) {
+      console.error("Error fetching health professionals:", error);
+    }
+  }, []);
+
+  const createHealthProfessional = useCallback(async (professionalData) => {
+    try {
+      const newProfessional = await db
+        .insert(HealthProfessionals)
+        .values(professionalData)
+        .returning()
+        .execute();
+      setHealthProfessionals((prev) => [...prev, newProfessional[0]]);
+      return newProfessional[0];
+    } catch (error) {
+      console.error("Error creating health professional:", error);
+      return null;
+    }
+  }, []);
+
+  const updateHealthProfessional = useCallback(async (id, professionalData) => {
+    try {
+      const updatedProfessional = await db
+        .update(HealthProfessionals)
+        .set(professionalData)
+        .where(eq(HealthProfessionals.id, id))
+        .returning()
+        .execute();
+      setHealthProfessionals((prev) =>
+        prev.map((prof) => (prof.id === id ? updatedProfessional[0] : prof))
+      );
+      return updatedProfessional[0];
+    } catch (error) {
+      console.error("Error updating health professional:", error);
+      return null;
+    }
+  }, []);
+
+  // Subscription functions
+  const fetchUserSubscriptions = useCallback(async (userId) => {
+    try {
+      const result = await db
+        .select()
+        .from(Subscriptions)
+        .where(eq(Subscriptions.userId, userId))
+        .execute();
+      setSubscriptions(result);
+    } catch (error) {
+      console.error("Error fetching user subscriptions:", error);
+    }
+  }, []);
+
+  const createSubscription = useCallback(async (subscriptionData) => {
+    try {
+      const newSubscription = await db
+        .insert(Subscriptions)
+        .values({
+          ...subscriptionData,
+          startDate: subscriptionData.startDate instanceof Date ? subscriptionData.startDate : new Date(subscriptionData.startDate),
+          endDate: subscriptionData.endDate instanceof Date ? subscriptionData.endDate : new Date(subscriptionData.endDate),
+        })
+        .returning()
+        .execute();
+      setSubscriptions((prev) => [...prev, newSubscription[0]]);
+      return newSubscription[0];
+    } catch (error) {
+      console.error("Error creating subscription:", error);
+      throw error; // Rethrow the error so it can be caught in the component
+    }
+  }, []);
+
+  const updateSubscription = useCallback(async (id, subscriptionData) => {
+    try {
+      const updatedSubscription = await db
+        .update(Subscriptions)
+        .set(subscriptionData)
+        .where(eq(Subscriptions.id, id))
+        .returning()
+        .execute();
+      setSubscriptions((prev) =>
+        prev.map((sub) => (sub.id === id ? updatedSubscription[0] : sub))
+      );
+      return updatedSubscription[0];
+    } catch (error) {
+      console.error("Error updating subscription:", error);
+      return null;
+    }
+  }, []);
+
+  // Subscription Transaction function
+  const createSubscriptionTransaction = useCallback(async (transactionData) => {
+    try {
+      const newTransaction = await db
+        .insert(SubscriptionTransactions)
+        .values(transactionData)
+        .returning()
+        .execute();
+      return newTransaction[0];
+    } catch (error) {
+      console.error("Error creating subscription transaction:", error);
+      throw error;
+    }
+  }, []);
+
   return (
     <StateContext.Provider
       value={{
@@ -111,6 +222,15 @@ export const StateContextProvider = ({ children }) => {
         createRecord,
         currentUser,
         updateRecord,
+        healthProfessionals,
+        subscriptions,
+        fetchHealthProfessionals,
+        createHealthProfessional,
+        updateHealthProfessional,
+        fetchUserSubscriptions,
+        createSubscription,
+        updateSubscription,
+        createSubscriptionTransaction,
       }}
     >
       {children}

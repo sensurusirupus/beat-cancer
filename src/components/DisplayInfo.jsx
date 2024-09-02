@@ -7,13 +7,13 @@ import {
   IconHourglassHigh,
   IconUserScan,
 } from "@tabler/icons-react";
-import { usePrivy } from "@privy-io/react-auth";
+// import { usePrivy } from "@privy-io/react-auth";
 import MetricsCard from "./MetricsCard"; // Adjust the import path
 import { useStateContext } from "../context"; // Ensure correct import path
 
 const DisplayInfo = () => {
   const navigate = useNavigate();
-  const { user } = usePrivy();
+  const userEmail = localStorage.getItem('userEmail');
   const { fetchUserRecords, records, fetchUserByEmail } = useStateContext();
   const [metrics, setMetrics] = useState({
     totalFolders: 0,
@@ -25,8 +25,8 @@ const DisplayInfo = () => {
   });
 
   useEffect(() => {
-    if (user) {
-      fetchUserByEmail(user.email.address)
+    if (userEmail) {
+      fetchUserByEmail(userEmail)
         .then(() => {
           console.log(records);
           const totalFolders = records.length;
@@ -74,7 +74,7 @@ const DisplayInfo = () => {
           console.log(e);
         });
     }
-  }, [user, fetchUserRecords, records]);
+  }, [userEmail, fetchUserRecords, records]);
 
   const metricsData = [
     {

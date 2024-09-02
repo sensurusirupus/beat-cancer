@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { sun } from "../assets";
 import { navlinks } from "../constants";
-import { IconHeartHandshake } from "@tabler/icons-react";
+import { IconHeartHandshake, IconStethoscope, IconCreditCard } from "@tabler/icons-react";
 
 const Icon = ({ styles, name, imgUrl, isActive, disabled, handleClick }) => (
   <div
@@ -30,6 +30,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState("dashboard");
 
+
+
   return (
     <div className="sticky top-5 flex h-[93vh] flex-col items-center justify-between">
       <Link to="/">
@@ -40,7 +42,7 @@ const Sidebar = () => {
 
       <div className="mt-12 flex w-[76px] flex-1 flex-col items-center justify-between rounded-[20px] bg-[#1c1c24] py-4">
         <div className="flex flex-col items-center justify-center gap-3">
-          {navlinks.map((link) => (
+          {[...navlinks].map((link) => (
             <Icon
               key={link.name}
               {...link}

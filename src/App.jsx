@@ -5,6 +5,8 @@ import { Home, Profile, Onboarding } from "./pages";
 import MedicalRecords from "./pages/records/index";
 import ScreeningSchedule from "./pages/ScreeningSchedule";
 import SingleRecordDetails from "./pages/records/single-record-details";
+import Professionals from "./pages/Professionals";
+import Subscriptions from "./pages/Subscriptions";
 import { useStateContext } from "./context";
 
 const App = () => {
@@ -37,6 +39,8 @@ const App = () => {
             path="/medical-records/:id"
             element={<SingleRecordDetails />}
           />
+           <Route path="/professionals" element={<Professionals />} />
+           <Route path="/subscriptions" element={<Subscriptions />} />
           <Route path="/screening-schedules" element={<ScreeningSchedule />} />
         </Routes>
       </div>
