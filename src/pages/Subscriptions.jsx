@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useStateContext } from '../context';
-import { fetchLatestPrice, connectWallet } from '../utils/contractInteraction';
+import { fetchLatestPrice, connectWallet } from '../utils/contractfunctions';
 import { ethers } from 'ethers';
+import { createUserActivityAttestation } from '../utils/signattestation'; // Import the Sign Protocol function
+import { createSubscriptionAttestation, createSubscriptionTransactionAttestation } from '../utils/signattestation';
 
 const Subscriptions = () => {
   const { 
     subscriptions, 
     fetchUserSubscriptions, 
     createSubscription, 
-    currentUser, 
-    createSubscriptionTransaction 
+    currentUser,
+    createSubscriptionTransaction // Add this line
   } = useStateContext();
   const [ethPrice, setEthPrice] = useState(0);
   const [newSubscription, setNewSubscription] = useState({
@@ -107,18 +109,34 @@ const Subscriptions = () => {
         endDate: endDate,
       });
 
-      // Create a subscription transaction record
-      await createSubscriptionTransaction({
-        subscriptionId: newSubscription.id,
-        amountPaid: plan.price,
-        paidCurrency: 'ETH',
-        conversionRate: ethPrice,
-        usdEquivalent: plan.price * ethPrice,
-        transactionHash: tx.hash,
-      });
+      // Create subscription attestation
+      const subscriptionAttestationResult = await createSubscriptionAttestation(
+        currentUser.address,
+        plan.name,
+        plan.price,
+        'ETH',
+        startDate,
+        endDate
+      );
+
+      // Create subscription transaction attestation
+      const transactionAttestationResult = await createSubscriptionTransactionAttestation(
+        currentUser.address,
+        newSubscription.id,
+        plan.price,
+        'ETH',
+        ethPrice,
+        plan.price * ethPrice,
+        tx.hash
+      );
+
+      if (subscriptionAttestationResult && transactionAttestationResult) {
+        console.log("Attestations created successfully");
+      } else {
+        console.warn("Failed to create one or more attestations");
+      }
 
       alert(`Subscribed to ${plan.name} successfully!`);
-      fetchUserSubscriptions(currentUser.id); // Refresh the subscriptions list
     } catch (error) {
       console.error("Error subscribing to plan:", error);
       alert("Failed to subscribe. Please try again.");

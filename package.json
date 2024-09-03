@@ -31,6 +31,7 @@
   "dependencies": {
     "@dnd-kit/core": "6.0.8",
     "@dnd-kit/sortable": "7.0.2",
+    "@ethsign/sp-sdk": "^0.7.2",
     "@google/generative-ai": "^0.16.0",
     "@headlessui/react": "1.7.15",
     "@metamask/abi-utils": "^2.0.4",
@@ -93,6 +94,7 @@
     "superstruct": "^2.0.2",
     "typechain": "^8.3.0",
     "typescript": ">=4.5.0",
+    "viem": "^2.21.1",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {

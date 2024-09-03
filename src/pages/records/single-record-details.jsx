@@ -58,7 +58,7 @@ function SingleRecordDetails() {
     setUploading(true);
     setUploadSuccess(false);
 
-    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const genAI = new GoogleGenerativeAI('AIzaSyDG8G0kT3XXyGjYYokGsb55FYsIgUsoC2s');
 
     try {
       const base64Data = await readFileAsBase64(file);
@@ -103,7 +103,7 @@ function SingleRecordDetails() {
   const processTreatmentPlan = async () => {
     setIsProcessing(true);
 
-    const genAI = new GoogleGenerativeAI(geminiApiKey);
+    const genAI = new GoogleGenerativeAI('AIzaSyDG8G0kT3XXyGjYYokGsb55FYsIgUsoC2s');
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 

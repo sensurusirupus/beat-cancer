@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStateContext } from '../context';
-import { addMedicalProfessional, connectWallet } from '../utils/contractInteraction';
+import { addMedicalProfessional, connectWallet } from '../utils/contractfunctions';
 
 const Professionals = () => {
   const { healthProfessionals, fetchHealthProfessionals, createHealthProfessional } = useStateContext();
@@ -64,7 +64,7 @@ const Professionals = () => {
     <div className="flex flex-col p-4 text-white">
       <h1 className="text-3xl font-bold mb-6">Health Professionals</h1>
       
-      <form onSubmit={handleSubmit} className="mb-8 bg-[#1c1c24] p-4 rounded-lg">
+      {/* <form onSubmit={handleSubmit} className="mb-8 bg-[#1c1c24] p-4 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
@@ -134,7 +134,7 @@ const Professionals = () => {
         <button type="submit" className="mt-4 bg-[#1dc071] text-white p-2 rounded hover:bg-[#1ab069] transition-colors">
           Add Professional
         </button>
-      </form>
+      </form> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {healthProfessionals.map(professional => (
