@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
     "eject": "react-scripts eject",
     "db:push": "drizzle-kit push",
     "db:studio": "npx drizzle-kit studio"
