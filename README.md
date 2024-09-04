@@ -97,48 +97,6 @@ The project uses Google's Generative AI (Gemini) to analyze medical reports and 
 ```
 
 
-### Blockchain Integration
-Smart contract interactions for managing treatment plans and medical professionals are handled in:
-
-
-```46:79:src/utils/contractfunctions.js
-// Function to create a treatment plan
-export const createTreatmentPlan = async (description, startTime, endTime) => {
-  const provider = getProvider();
-  if (!provider) return;
-
-  const signer = getSigner(provider);
-  const contract = getContract(signer);
-
-  try {
-    const tx = await contract.createTreatmentPlan(description, startTime, endTime);
-    await tx.wait();
-    console.log("Treatment plan created successfully");
-  } catch (error) {
-    console.error("Error creating treatment plan:", error);
-  }
-};
-
-// Function to add a medical professional
-export const addMedicalProfessional = async (professionalAddress) => {
-  const provider = getProvider();
-  if (!provider) throw new Error("No Ethereum provider found. Install MetaMask.");
-
-  const signer = getSigner(provider);
-  const contract = getContract(signer);
-
-  try {
-    const tx = await contract.addMedicalProfessional(professionalAddress);
-    await tx.wait();
-    console.log("Medical professional added successfully");
-  } catch (error) {
-    console.error("Error adding medical professional:", error);
-    throw error;
-  }
-};
-```
-
-
 ### Decentralized Authentication
 Web3Auth is integrated for secure and user-friendly authentication:
 
